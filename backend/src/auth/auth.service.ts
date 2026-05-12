@@ -124,4 +124,204 @@ export class AuthService {
       },
     };
   }
+
+  async getAllUsers(options: { take?: number; skip?: number }) {
+    const [users, total] = await Promise.all([
+      this.prisma.users.findMany({
+        take: options.take,
+        skip: options.skip,
+        orderBy: { created_at: 'desc' },
+        select: {
+          id: true,
+          role: true,
+          full_name: true,
+          email: true,
+          phone: true,
+          telegram_username: true,
+          is_suspended: true,
+          created_at: true,
+          _count: {
+            select: {
+              products: true,
+            },
+          },
+        },
+      }),
+      this.prisma.users.count(),
+    ]);
+
+    return {
+      users,
+      total,
+      take: options.take,
+      skip: options.skip,
+    };
+  }
+
+  async getUserById(id: string) {
+    const user = await this.prisma.users.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        role: true,
+        full_name: true,
+        email: true,
+        phone: true,
+        telegram_username: true,
+        is_suspended: true,
+        created_at: true,
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    return user;
+  }
+
+  async suspendUser(id: string, is_suspended: boolean) {
+    const user = await this.prisma.users.update({
+      where: { id },
+      data: { is_suspended },
+      select: {
+        id: true,
+        role: true,
+        full_name: true,
+        email: true,
+        phone: true,
+        telegram_username: true,
+        is_suspended: true,
+        created_at: true,
+      },
+    });
+
+    return user;
+  }
+
+  async getSellers(options: { take?: number; skip?: number }) {
+    const [sellers, total] = await Promise.all([
+      this.prisma.users.findMany({
+        where: { role: 'seller' },
+        take: options.take,
+        skip: options.skip,
+        orderBy: { created_at: 'desc' },
+        select: {
+          id: true,
+          role: true,
+          full_name: true,
+          email: true,
+          phone: true,
+          telegram_username: true,
+          is_suspended: true,
+          created_at: true,
+          _count: {
+            select: {
+              products: true,
+            },
+          },
+        },
+      }),
+      this.prisma.users.count({ where: { role: 'seller' } }),
+    ]);
+
+    return {
+      sellers,
+      total,
+      take: options.take,
+      skip: options.skip,
+    };
+  }
+
+  async getPlatformStats() {
+    const [totalUsers, totalSellers, totalProducts, totalActiveProducts] =
+      await Promise.all([
+        this.prisma.users.count(),
+        this.prisma.users.count({ where: { role: 'seller' } }),
+        this.prisma.products.count(),
+        this.prisma.products.count({
+          where: { is_published: true, is_sold: false },
+        }),
+      ]);
+
+    return {
+      totalUsers,
+      totalSellers,
+      totalProducts,
+      totalActiveProducts,
+    };
+  }
+
+  async updateProfile(
+    userId: string,
+    updateData: {
+      full_name?: string;
+      email?: string;
+      phone?: string;
+      telegram_username?: string;
+    },
+  ) {
+    const normalizedEmail = updateData.email
+      ? this.normalizeEmail(updateData.email)
+      : undefined;
+
+    // Check for email/phone conflicts if they're being updated
+    if (normalizedEmail) {
+      const existingUser = await this.prisma.users.findFirst({
+        where: {
+          email: normalizedEmail,
+          id: { not: userId },
+        },
+      });
+
+      if (existingUser) {
+        throw new ConflictException('Email already in use');
+      }
+    }
+
+    if (updateData.phone) {
+      const existingUser = await this.prisma.users.findFirst({
+        where: {
+          phone: updateData.phone,
+          id: { not: userId },
+        },
+      });
+
+      if (existingUser) {
+        throw new ConflictException('Phone number already in use');
+      }
+    }
+
+    const user = await this.prisma.users.update({
+      where: { id: userId },
+      data: {
+        full_name: updateData.full_name?.trim(),
+        email: normalizedEmail,
+        phone: updateData.phone?.trim(),
+        telegram_username: updateData.telegram_username?.trim(),
+      },
+      select: {
+        id: true,
+        role: true,
+        full_name: true,
+        email: true,
+        phone: true,
+        telegram_username: true,
+        is_suspended: true,
+        created_at: true,
+      },
+    });
+
+    return {
+      ...user,
+      email: user.email ?? null,
+      phone: user.phone ?? null,
+      telegram_username: user.telegram_username ?? null,
+    };
+  }
 }

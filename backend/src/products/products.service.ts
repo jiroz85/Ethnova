@@ -32,7 +32,11 @@ export class ProductsService {
     return null;
   }
 
-  listLatest(params: { take?: number; categorySlug?: string }) {
+  listLatest(params: {
+    take?: number;
+    categorySlug?: string;
+    search?: string;
+  }) {
     const take = params.take ?? 24;
 
     return this.prisma.products.findMany({
@@ -42,6 +46,16 @@ export class ProductsService {
         is_sold: false,
         ...(params.categorySlug
           ? { category: { slug: params.categorySlug } }
+          : {}),
+        ...(params.search
+          ? {
+              OR: [
+                { title: { contains: params.search, mode: 'insensitive' } },
+                {
+                  description: { contains: params.search, mode: 'insensitive' },
+                },
+              ],
+            }
           : {}),
       },
       orderBy: { created_at: 'desc' },

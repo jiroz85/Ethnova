@@ -2,48 +2,62 @@ import {
   Controller,
   Post,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
-  Body,
   BadRequestException,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
+import * as multer from 'multer';
 
 @Controller('upload')
 @UseGuards(JwtAuthGuard)
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Post('images')
+  @Post('image')
   @UseInterceptors(
-    FilesInterceptor('files', 5, (req, res, cb) => {
-      const options = this.uploadService.getMulterOptions();
-      const multer = require('multer');
-      const upload = multer(options);
-      upload.single('files')(req, res, cb);
+    FileInterceptor('file', {
+      storage: multer.memoryStorage(),
+      fileFilter: (_req, file, cb) => {
+        const allowedTypes = [
+          'image/jpeg',
+          'image/jpg',
+          'image/png',
+          'image/webp',
+        ];
+        if (allowedTypes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(
+            new Error(
+              'Invalid file type. Only JPEG, PNG, and WebP are allowed.',
+            ),
+            false,
+          );
+        }
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+      },
     }),
   )
-  async uploadImages(
+  async uploadImage(
     @CurrentUser() user: AuthUser,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!files || files.length === 0) {
-      throw new BadRequestException('No files uploaded');
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
     }
 
     try {
-      const uploadPromises = files.map((file) =>
-        this.uploadService.uploadImage(file),
-      );
-      const results = await Promise.all(uploadPromises);
-
+      const result = await this.uploadService.uploadImage(file);
       return {
         success: true,
-        images: results,
+        image: result,
       };
     } catch (error) {
       throw new BadRequestException(

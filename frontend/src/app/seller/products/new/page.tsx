@@ -49,6 +49,8 @@ export default function SellerNewProductPage() {
   const [city, setCity] = useState("");
   const [area, setArea] = useState("");
   const [isPublished, setIsPublished] = useState(true);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -75,6 +77,50 @@ export default function SellerNewProductPage() {
 
     void loadCategories();
   }, [apiBaseUrl, router, token, categoryId]);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !token) return;
+
+    setUploadingImage(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${apiBaseUrl}/upload/image`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("ethnova_access_token");
+        localStorage.removeItem("ethnova_user");
+        router.replace("/seller/login");
+        return;
+      }
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(getErrorMessage(data, "Upload failed"));
+      }
+
+      const result = await res.json();
+      setImages((prev) => [...prev, result.image.url]);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
+  function removeImage(index: number) {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -123,6 +169,24 @@ export default function SellerNewProductPage() {
       }
 
       const created = data as CreateProductResponse;
+
+      // Upload images if any
+      if (images.length > 0) {
+        for (const imageUrl of images) {
+          await fetch(`${apiBaseUrl}/products/${created.id}/images`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              url: imageUrl,
+              sort_order: images.indexOf(imageUrl),
+            }),
+          });
+        }
+      }
+
       router.push(`/product/${created.id}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create product");
@@ -218,6 +282,61 @@ export default function SellerNewProductPage() {
               placeholder="Bole"
             />
           </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="block text-sm font-medium">Product Images</label>
+          <div className="mt-2">
+            <input
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              onChange={handleImageUpload}
+              disabled={uploadingImage}
+              className="block w-full text-sm text-zinc-600 file:mr-4 file:rounded-full file:border-0 file:bg-foreground file:py-2 file:px-4 file:text-sm file:font-medium file:text-background dark:file:bg-white dark:file:text-black"
+            />
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Upload up to 5 images. JPEG, PNG, or WebP format. Max 5MB each.
+            </p>
+          </div>
+
+          {images.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {images.map((imageUrl, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={imageUrl}
+                    alt={`Product image ${index + 1}`}
+                    className="aspect-square w-full rounded-lg object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                  >
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {uploadingImage && (
+            <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+              Uploading image...
+            </div>
+          )}
         </div>
 
         <label className="mt-4 flex items-center gap-2 text-sm">

@@ -25,6 +25,8 @@ model users {
   updated_at        DateTime   @default(now()) @db.Timestamptz(6)
 
   products          products[]
+  reported_products reports[] @relation("Reporter")
+  received_reports  reports[] @relation("ReportedSeller")
 }
 
 model categories {
@@ -58,6 +60,7 @@ model products {
   category      categories @relation(fields: [category_id], references: [id])
 
   images        product_images[]
+  reports       reports[]
 
   @@index([category_id])
   @@index([seller_id])
@@ -75,4 +78,32 @@ model product_images {
 
   @@index([product_id])
   @@index([product_id, sort_order])
+}
+
+model reports {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reporter_id String?    @db.Uuid
+  product_id  String?    @db.Uuid
+  seller_id   String?    @db.Uuid
+  reason      String
+  description String?
+  status      report_status @default(pending)
+  created_at  DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime   @default(now()) @db.Timestamptz(6)
+
+  reporter    users?     @relation("Reporter", fields: [reporter_id], references: [id], onDelete: SetNull)
+  product     products?  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  seller      users?     @relation("ReportedSeller", fields: [seller_id], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([created_at(sort: Desc)])
+  @@index([product_id])
+  @@index([seller_id])
+}
+
+enum report_status {
+  pending
+  reviewed
+  resolved
+  dismissed
 }

@@ -25,12 +25,17 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  list(@Query('take') take?: string, @Query('category') categorySlug?: string) {
+  list(
+    @Query('take') take?: string,
+    @Query('category') categorySlug?: string,
+    @Query('search') search?: string,
+  ) {
     const parsedTake = take ? Number(take) : undefined;
 
     return this.productsService.listLatest({
       take: Number.isFinite(parsedTake) ? parsedTake : undefined,
       categorySlug,
+      search,
     });
   }
 

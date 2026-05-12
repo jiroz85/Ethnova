@@ -16,6 +16,7 @@ type Product = {
     phone: string | null;
     telegram_username: string | null;
   };
+  images: { id: string; url: string }[];
 };
 
 function formatLocation(p: {
@@ -78,20 +79,31 @@ export default async function CategoryPage({
             <a
               key={p.id}
               href={`/product/${p.id}`}
-              className="rounded-xl border border-black/10 bg-white p-4 hover:bg-zinc-50 dark:bg-black dark:border-white/10 dark:hover:bg-white/5"
+              className="rounded-xl border border-black/10 bg-white overflow-hidden hover:bg-zinc-50 dark:bg-black dark:border-white/10 dark:hover:bg-white/5"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="truncate text-base font-semibold">
-                    {p.title}
-                  </div>
-                  <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                    {formatLocation(p) ? formatLocation(p) : "—"}
-                  </div>
+              {p.images.length > 0 && (
+                <div className="aspect-video w-full overflow-hidden">
+                  <img
+                    src={p.images[0].url}
+                    alt={p.title}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
-                <div className="shrink-0 text-right">
-                  <div className="text-base font-semibold">
-                    {p.price} {p.currency}
+              )}
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="truncate text-base font-semibold">
+                      {p.title}
+                    </div>
+                    <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                      {formatLocation(p) ? formatLocation(p) : "—"}
+                    </div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <div className="text-base font-semibold">
+                      {p.price} {p.currency}
+                    </div>
                   </div>
                 </div>
               </div>
