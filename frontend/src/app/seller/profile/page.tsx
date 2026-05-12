@@ -31,20 +31,22 @@ export default function SellerProfilePage() {
     [],
   );
 
-  const [user, setUser] = useState<MeUser | null>(() => {
+  const [user, setUser] = useState<MeUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize user and token from localStorage on client side only
+  useEffect(() => {
     try {
       const rawUser = localStorage.getItem("ethnova_user");
-      return rawUser ? (JSON.parse(rawUser) as MeUser) : null;
+      const storedToken = localStorage.getItem("ethnova_access_token");
+      setUser(rawUser ? (JSON.parse(rawUser) as MeUser) : null);
+      setToken(storedToken);
     } catch {
-      return null;
-    }
-  });
-
-  const token = useMemo(() => {
-    try {
-      return localStorage.getItem("ethnova_access_token");
-    } catch {
-      return null;
+      setUser(null);
+      setToken(null);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -52,21 +54,29 @@ export default function SellerProfilePage() {
   const [submitting, setSubmitting] = useState(false);
 
   // Form states - initialize from user data
-  const [fullName, setFullName] = useState(user?.full_name || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [phone, setPhone] = useState(user?.phone || "");
-  const [telegramUsername, setTelegramUsername] = useState(
-    user?.telegram_username || "",
-  );
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [telegramUsername, setTelegramUsername] = useState("");
+
+  // Update form states when user data is loaded
+  useEffect(() => {
+    if (user) {
+      setFullName(user.full_name || "");
+      setEmail(user.email || "");
+      setPhone(user.phone || "");
+      setTelegramUsername(user.telegram_username || "");
+    }
+  }, [user]);
 
   useEffect(() => {
-    if (token === null) return;
+    if (isLoading) return;
 
     if (!token) {
       router.replace("/seller/login");
       return;
     }
-  }, [apiBaseUrl, router, token]);
+  }, [isLoading, token, router]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -122,7 +132,7 @@ export default function SellerProfilePage() {
     router.replace("/");
   }
 
-  if (token === null) {
+  if (isLoading) {
     return (
       <div className="mx-auto w-full max-w-3xl px-6 py-10">
         <div className="text-sm text-zinc-600 dark:text-zinc-400">

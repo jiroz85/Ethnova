@@ -208,10 +208,75 @@ export default function Home() {
           </div>
 
           {products.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+            <div className="space-y-12">
+              {/* Group products by category with specific order */}
+              {(() => {
+                // Define category order
+                const categoryOrder = ["Shoes", "Clothes"];
+
+                // Get unique categories
+                const uniqueCategories = Array.from(
+                  new Set(products.map((p) => p.category.id)),
+                ).map((categoryId) => {
+                  const categoryProducts = products.filter(
+                    (p) => p.category.id === categoryId,
+                  );
+                  const category = categoryProducts[0]?.category;
+                  return {
+                    id: categoryId,
+                    name: category?.name || "",
+                    products: categoryProducts,
+                  };
+                });
+
+                // Sort categories: Shoes first, Clothes second, then alphabetically
+                uniqueCategories.sort((a, b) => {
+                  const aIndex = categoryOrder.indexOf(a.name);
+                  const bIndex = categoryOrder.indexOf(b.name);
+
+                  if (aIndex !== -1 && bIndex !== -1) {
+                    return aIndex - bIndex;
+                  }
+                  if (aIndex !== -1) return -1;
+                  if (bIndex !== -1) return 1;
+
+                  return a.name.localeCompare(b.name);
+                });
+
+                return uniqueCategories.map((category) => (
+                  <div key={category.id} className="space-y-6">
+                    {/* Category Header */}
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {category.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                          />
+                        </svg>
+                        <span>{category.products.length} products</span>
+                      </div>
+                    </div>
+
+                    {/* Products Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {category.products.map((p) => (
+                        <ProductCard key={p.id} product={p} />
+                      ))}
+                    </div>
+                  </div>
+                ));
+              })()}
             </div>
           ) : (
             <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">

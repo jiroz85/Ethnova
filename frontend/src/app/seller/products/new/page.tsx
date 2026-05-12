@@ -82,6 +82,20 @@ export default function SellerNewProductPage() {
     const file = e.target.files?.[0];
     if (!file || !token) return;
 
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setError("File size must be less than 5MB");
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Invalid file type. Only JPEG, PNG, and WebP are allowed");
+      return;
+    }
+
     setUploadingImage(true);
     setError(null);
 
@@ -104,17 +118,31 @@ export default function SellerNewProductPage() {
         return;
       }
 
+      const data = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(getErrorMessage(data, "Upload failed"));
+        // Handle specific error messages from backend
+        if (data?.message) {
+          throw new Error(data.message);
+        }
+        throw new Error(`Upload failed (${res.status})`);
       }
 
-      const result = await res.json();
-      setImages((prev) => [...prev, result.image.url]);
+      // Check if the response has the expected structure
+      if (!data?.success || !data?.image?.url) {
+        throw new Error("Invalid response from server");
+      }
+
+      setImages((prev) => [...prev, data.image.url]);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to upload image");
+      console.error("Upload error:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to upload image";
+      setError(errorMessage);
     } finally {
       setUploadingImage(false);
+      // Clear the file input
+      e.target.value = "";
     }
   }
 
