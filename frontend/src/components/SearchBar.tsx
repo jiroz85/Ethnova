@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 type Category = { id: string; name: string; slug: string };
 
@@ -19,38 +19,36 @@ type Product = {
     full_name: string;
     phone: string | null;
     telegram_username: string | null;
+    avatar?: string | null;
   };
   images: { id: string; url: string }[];
 };
 
-export default function SearchBar({ onResults }: { onResults: (products: Product[]) => void }) {
+export default function SearchBar({
+  onResults,
+  categories,
+}: {
+  onResults: (products: Product[]) => void;
+  categories: Category[];
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    
-    fetch(`${apiBaseUrl}/categories`)
-      .then(res => res.json())
-      .then((data: Category[]) => setCategories(data))
-      .catch(err => console.error("Failed to load categories:", err));
-  }, []);
 
   const handleSearch = () => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
     const params = new URLSearchParams();
-    
+
     if (searchTerm.trim()) params.append("search", searchTerm.trim());
     if (selectedCategory) params.append("category", selectedCategory);
     params.append("take", "24");
-    
+
     const url = `${apiBaseUrl}/products?${params.toString()}`;
-    
+
     fetch(url)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((data: Product[]) => onResults(data))
-      .catch(err => console.error("Search failed:", err));
+      .catch((err) => console.error("Search failed:", err));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,7 +65,7 @@ export default function SearchBar({ onResults }: { onResults: (products: Product
         onChange={(e) => setSearchTerm(e.target.value)}
         className="flex-1 rounded-lg border border-black/10 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground dark:bg-white/5 dark:border-white/10"
       />
-      <select 
+      <select
         value={selectedCategory}
         onChange={(e) => setSelectedCategory(e.target.value)}
         className="rounded-lg border border-black/10 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground dark:bg-white/5 dark:border-white/10"
@@ -79,7 +77,7 @@ export default function SearchBar({ onResults }: { onResults: (products: Product
           </option>
         ))}
       </select>
-      <button 
+      <button
         type="submit"
         className="rounded-full bg-foreground px-6 py-2 text-sm font-medium text-background"
       >

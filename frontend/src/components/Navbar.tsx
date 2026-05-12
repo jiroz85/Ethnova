@@ -25,36 +25,36 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <Link
-                href="/"
+              <a
+                href="#home"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors dark:text-white dark:hover:text-blue-400"
               >
                 Home
-              </Link>
-              <Link
-                href="/shop"
+              </a>
+              <a
+                href="#shop"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors dark:text-white dark:hover:text-blue-400"
               >
                 Shop
-              </Link>
-              <Link
-                href="/categories"
+              </a>
+              <a
+                href="#categories"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors dark:text-white dark:hover:text-blue-400"
               >
                 Categories
-              </Link>
-              <Link
-                href="/about"
+              </a>
+              <a
+                href="#about"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors dark:text-white dark:hover:text-blue-400"
               >
                 About
-              </Link>
-              <Link
-                href="/contact"
+              </a>
+              <a
+                href="#contact"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors dark:text-white dark:hover:text-blue-400"
               >
                 Contact
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -117,41 +117,41 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-black border-t dark:border-white/10">
-            <Link
-              href="/"
+            <a
+              href="#home"
               className="text-gray-900 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium dark:text-white dark:hover:text-blue-400"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Home
-            </Link>
-            <Link
-              href="/shop"
+            </a>
+            <a
+              href="#shop"
               className="text-gray-900 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium dark:text-white dark:hover:text-blue-400"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Shop
-            </Link>
-            <Link
-              href="/categories"
+            </a>
+            <a
+              href="#categories"
               className="text-gray-900 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium dark:text-white dark:hover:text-blue-400"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Categories
-            </Link>
-            <Link
-              href="/about"
+            </a>
+            <a
+              href="#about"
               className="text-gray-900 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium dark:text-white dark:hover:text-blue-400"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               About
-            </Link>
-            <Link
-              href="/contact"
+            </a>
+            <a
+              href="#contact"
               className="text-gray-900 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium dark:text-white dark:hover:text-blue-400"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Contact
-            </Link>
+            </a>
             <Link
               href="/seller/login"
               className="bg-gradient-to-r from-blue-500 to-purple-600 text-white block px-3 py-2 rounded-md text-base font-medium mt-4"

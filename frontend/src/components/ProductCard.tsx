@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { useState } from "react";
+import ProductModal from "./ProductModal";
 
 type Category = { id: string; name: string; slug: string };
 
@@ -18,6 +19,7 @@ type Product = {
     full_name: string;
     phone: string | null;
     telegram_username: string | null;
+    avatar?: string | null;
   };
   images: { id: string; url: string }[];
 };
@@ -27,6 +29,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const formatLocation = (p: Product) => {
     const city = p.city?.trim() ? p.city.trim() : "";
     const area = p.area?.trim() ? p.area.trim() : "";
@@ -53,8 +57,11 @@ export default function ProductCard({ product }: ProductCardProps) {
   if (product.seller.telegram_username) contactMethods.push("Telegram");
 
   return (
-    <Link href={`/product/${product.id}`} className="block group">
-      <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-blue-500 transform hover:-translate-y-1">
+    <>
+      <div
+        onClick={() => setIsModalOpen(true)}
+        className="block group cursor-pointer bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-blue-500 transform hover:-translate-y-1"
+      >
         {/* Image Section */}
         <div className="relative h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden">
           {product.images.length > 0 ? (
@@ -81,8 +88,31 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
 
-          {/* Category Badge */}
+          {/* Seller Avatar */}
           <div className="absolute top-3 left-3">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full overflow-hidden border-3 border-white shadow-lg">
+                {product.seller.avatar ? (
+                  <img
+                    src={product.seller.avatar}
+                    alt={product.seller.full_name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span className="text-white text-xl font-bold">
+                      {product.seller.full_name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {/* Online indicator */}
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-3 border-white"></div>
+            </div>
+          </div>
+
+          {/* Category Badge */}
+          <div className="absolute top-3 left-24">
             <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
               {product.category.name}
             </span>
@@ -195,6 +225,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
       </div>
-    </Link>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={product}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
 }
