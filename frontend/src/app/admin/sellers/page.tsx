@@ -11,8 +11,9 @@ export default function AdminSellers() {
   const [total, setTotal] = useState(0);
 
   const fetchSellers = useCallback(async () => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    const token = localStorage.getItem("token");
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
+    const token = localStorage.getItem("ethnova_access_token");
 
     try {
       const response = await fetch(
@@ -21,7 +22,7 @@ export default function AdminSellers() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (!response.ok) throw new Error("Failed to fetch sellers");
@@ -31,7 +32,10 @@ export default function AdminSellers() {
       setTotal(data.total);
     } catch (err) {
       console.error("Failed to load sellers:", err);
-      if (err instanceof Error && (err.message.includes("401") || err.message.includes("403"))) {
+      if (
+        err instanceof Error &&
+        (err.message.includes("401") || err.message.includes("403"))
+      ) {
         window.location.href = "/login";
       }
     } finally {
@@ -43,19 +47,26 @@ export default function AdminSellers() {
     fetchSellers();
   }, [fetchSellers]);
 
-  const toggleSuspendSeller = async (sellerId: string, isSuspended: boolean) => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    const token = localStorage.getItem("token");
+  const toggleSuspendSeller = async (
+    sellerId: string,
+    isSuspended: boolean,
+  ) => {
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
+    const token = localStorage.getItem("ethnova_access_token");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/admin/users/${sellerId}/suspend`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${apiBaseUrl}/auth/admin/users/${sellerId}/suspend`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ is_suspended: !isSuspended }),
         },
-        body: JSON.stringify({ is_suspended: !isSuspended }),
-      });
+      );
 
       if (!response.ok) throw new Error("Failed to update seller");
 
@@ -150,7 +161,9 @@ export default function AdminSellers() {
                         {seller.phone || "No phone"}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {seller.telegram_username ? `@${seller.telegram_username}` : "No Telegram"}
+                        {seller.telegram_username
+                          ? `@${seller.telegram_username}`
+                          : "No Telegram"}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -172,7 +185,9 @@ export default function AdminSellers() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
-                        onClick={() => toggleSuspendSeller(seller.id, seller.is_suspended)}
+                        onClick={() =>
+                          toggleSuspendSeller(seller.id, seller.is_suspended)
+                        }
                         className={`${
                           seller.is_suspended
                             ? "text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
@@ -210,15 +225,11 @@ export default function AdminSellers() {
               <div>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   Showing{" "}
-                  <span className="font-medium">
-                    {(page - 1) * 20 + 1}
-                  </span>{" "}
-                  to{" "}
+                  <span className="font-medium">{(page - 1) * 20 + 1}</span> to{" "}
                   <span className="font-medium">
                     {Math.min(page * 20, total)}
                   </span>{" "}
-                  of{" "}
-                  <span className="font-medium">{total}</span> results
+                  of <span className="font-medium">{total}</span> results
                 </p>
               </div>
               <div>

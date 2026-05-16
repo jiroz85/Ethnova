@@ -4,6 +4,22 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
+  const admin = await prisma.users.upsert({
+    where: { email: 'admin@example.com' },
+    update: {
+      full_name: 'Admin User',
+      is_suspended: false,
+    },
+    create: {
+      role: 'admin',
+      full_name: 'Admin User',
+      email: 'admin@example.com',
+      password_hash: await bcrypt.hash('admin123', 10),
+      is_suspended: false,
+    },
+    select: { id: true },
+  });
+
   const seller = await prisma.users.upsert({
     where: { email: 'seller@example.com' },
     update: {

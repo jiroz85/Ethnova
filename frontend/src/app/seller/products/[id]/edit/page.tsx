@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 
 type Category = { id: string; name: string; slug: string };
 
@@ -205,139 +206,142 @@ export default function SellerEditProductPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-10">
-      <a
-        href="/seller/dashboard"
-        className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
-      >
-        ← Back to dashboard
-      </a>
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
+      <Navbar />
+      <div className="mx-auto w-full max-w-3xl px-6 py-10">
+        <a
+          href="/seller/dashboard"
+          className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
+        >
+          ← Back to dashboard
+        </a>
 
-      <h1 className="mt-4 text-2xl font-semibold">Edit product</h1>
+        <h1 className="mt-4 text-2xl font-semibold">Edit product</h1>
 
-      <div className="mt-6 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:bg-black dark:border-white/10">
-        {loading ? (
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            Loading…
-          </div>
-        ) : error ? (
-          <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
-            {error}
-          </div>
-        ) : (
-          <form onSubmit={onSubmit}>
-            <label className="block text-sm font-medium">Category</label>
-            <select
-              className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              required
-            >
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            <label className="mt-4 block text-sm font-medium">Title</label>
-            <input
-              className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-
-            <label className="mt-4 block text-sm font-medium">
-              Description
-            </label>
-            <textarea
-              className="mt-2 min-h-32 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium">Price</label>
-                <input
-                  className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  inputMode="decimal"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Currency</label>
-                <input
-                  className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                />
-              </div>
+        <div className="mt-6 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:bg-black dark:border-white/10">
+          {loading ? (
+            <div className="text-sm text-zinc-600 dark:text-zinc-400">
+              Loading…
             </div>
+          ) : error ? (
+            <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
+              {error}
+            </div>
+          ) : (
+            <form onSubmit={onSubmit}>
+              <label className="block text-sm font-medium">Category</label>
+              <select
+                className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                required
+              >
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
 
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium">City</label>
-                <input
-                  className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Addis Ababa"
-                />
+              <label className="mt-4 block text-sm font-medium">Title</label>
+              <input
+                className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+
+              <label className="mt-4 block text-sm font-medium">
+                Description
+              </label>
+              <textarea
+                className="mt-2 min-h-32 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium">Price</label>
+                  <input
+                    className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    inputMode="decimal"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium">Currency</label>
+                  <input
+                    className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium">
-                  Area / Subcity
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium">City</label>
+                  <input
+                    className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Addis Ababa"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium">
+                    Area / Subcity
+                  </label>
+                  <input
+                    className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                    value={area}
+                    onChange={(e) => setArea(e.target.value)}
+                    placeholder="Bole"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={isPublished}
+                    onChange={(e) => setIsPublished(e.target.checked)}
+                  />
+                  Published
                 </label>
-                <input
-                  className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-                  value={area}
-                  onChange={(e) => setArea(e.target.value)}
-                  placeholder="Bole"
-                />
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={isSold}
+                    onChange={(e) => setIsSold(e.target.checked)}
+                  />
+                  Sold
+                </label>
               </div>
-            </div>
 
-            <div className="mt-4 flex flex-col gap-2">
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={isPublished}
-                  onChange={(e) => setIsPublished(e.target.checked)}
-                />
-                Published
-              </label>
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={isSold}
-                  onChange={(e) => setIsSold(e.target.checked)}
-                />
-                Sold
-              </label>
-            </div>
+              {error ? (
+                <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
+                  {error}
+                </div>
+              ) : null}
 
-            {error ? (
-              <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
-                {error}
-              </div>
-            ) : null}
-
-            <button
-              disabled={submitting}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
-              type="submit"
-            >
-              {submitting ? "Saving…" : "Save changes"}
-            </button>
-          </form>
-        )}
+              <button
+                disabled={submitting}
+                className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
+                type="submit"
+              >
+                {submitting ? "Saving…" : "Save changes"}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

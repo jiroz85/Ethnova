@@ -14,8 +14,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    const token = localStorage.getItem("token");
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
+    const token = localStorage.getItem("ethnova_access_token");
 
     fetch(`${apiBaseUrl}/auth/admin/stats`, {
       headers: {
@@ -33,7 +34,7 @@ export default function AdminDashboard() {
         console.error("Failed to load admin stats:", err);
         // Redirect to login if unauthorized
         if (err.message.includes("401") || err.message.includes("403")) {
-          window.location.href = "/login";
+          window.location.href = "/seller/login";
         }
       })
       .finally(() => setLoading(false));

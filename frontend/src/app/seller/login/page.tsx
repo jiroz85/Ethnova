@@ -10,6 +10,7 @@ type LoginResponse = {
     full_name: string;
     email: string | null;
     phone: string | null;
+    role: string;
   };
 };
 
@@ -62,7 +63,12 @@ export default function SellerLoginPage() {
       localStorage.setItem("ethnova_access_token", parsed.access_token);
       localStorage.setItem("ethnova_user", JSON.stringify(parsed.user));
 
-      router.push("/seller/dashboard");
+      // Redirect based on user role
+      if (parsed.user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/seller/dashboard");
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 
 type Category = { id: string; name: string; slug: string };
 
@@ -224,172 +225,177 @@ export default function SellerNewProductPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-10">
-      <a
-        href="/seller/dashboard"
-        className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
-      >
-        ← Back to dashboard
-      </a>
-
-      <h1 className="mt-4 text-2xl font-semibold">Add new product</h1>
-
-      <form
-        onSubmit={onSubmit}
-        className="mt-6 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:bg-black dark:border-white/10"
-      >
-        <label className="block text-sm font-medium">Category</label>
-        <select
-          className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          disabled={loadingCategories}
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
+      <Navbar />
+      <div className="mx-auto w-full max-w-3xl px-6 py-10">
+        <a
+          href="/seller/dashboard"
+          className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
         >
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          ← Back to dashboard
+        </a>
 
-        <label className="mt-4 block text-sm font-medium">Title</label>
-        <input
-          className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+        <h1 className="mt-4 text-2xl font-semibold">Add new product</h1>
 
-        <label className="mt-4 block text-sm font-medium">Description</label>
-        <textarea
-          className="mt-2 min-h-32 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
+        <form
+          onSubmit={onSubmit}
+          className="mt-6 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:bg-black dark:border-white/10"
+        >
+          <label className="block text-sm font-medium">Category</label>
+          <select
+            className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            disabled={loadingCategories}
+          >
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium">Price</label>
-            <input
-              className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              inputMode="decimal"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Currency</label>
-            <input
-              className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium">City</label>
-            <input
-              className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="Addis Ababa"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Area / Subcity</label>
-            <input
-              className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-              placeholder="Bole"
-            />
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <label className="block text-sm font-medium">Product Images</label>
-          <div className="mt-2">
-            <input
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              onChange={handleImageUpload}
-              disabled={uploadingImage}
-              className="block w-full text-sm text-zinc-600 file:mr-4 file:rounded-full file:border-0 file:bg-foreground file:py-2 file:px-4 file:text-sm file:font-medium file:text-background dark:file:bg-white dark:file:text-black"
-            />
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Upload up to 5 images. JPEG, PNG, or WebP format. Max 5MB each.
-            </p>
-          </div>
-
-          {images.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {images.map((imageUrl, index) => (
-                <div key={index} className="relative group">
-                  <img
-                    src={imageUrl}
-                    alt={`Product image ${index + 1}`}
-                    className="aspect-square w-full rounded-lg object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    <svg
-                      className="h-3 w-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {uploadingImage && (
-            <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              Uploading image...
-            </div>
-          )}
-        </div>
-
-        <label className="mt-4 flex items-center gap-2 text-sm">
+          <label className="mt-4 block text-sm font-medium">Title</label>
           <input
-            type="checkbox"
-            checked={isPublished}
-            onChange={(e) => setIsPublished(e.target.checked)}
+            className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
           />
-          Publish immediately
-        </label>
 
-        {error ? (
-          <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
-            {error}
+          <label className="mt-4 block text-sm font-medium">Description</label>
+          <textarea
+            className="mt-2 min-h-32 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium">Price</label>
+              <input
+                className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                inputMode="decimal"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Currency</label>
+              <input
+                className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              />
+            </div>
           </div>
-        ) : null}
 
-        <button
-          disabled={submitting}
-          className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
-          type="submit"
-        >
-          {submitting ? "Creating…" : "Create product"}
-        </button>
-      </form>
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium">City</label>
+              <input
+                className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Addis Ababa"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">
+                Area / Subcity
+              </label>
+              <input
+                className="mt-2 w-full rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-sm outline-none dark:bg-white/5 dark:border-white/10"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                placeholder="Bole"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium">Product Images</label>
+            <div className="mt-2">
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleImageUpload}
+                disabled={uploadingImage}
+                className="block w-full text-sm text-zinc-600 file:mr-4 file:rounded-full file:border-0 file:bg-foreground file:py-2 file:px-4 file:text-sm file:font-medium file:text-background dark:file:bg-white dark:file:text-black"
+              />
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                Upload up to 5 images. JPEG, PNG, or WebP format. Max 5MB each.
+              </p>
+            </div>
+
+            {images.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {images.map((imageUrl, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={imageUrl}
+                      alt={`Product image ${index + 1}`}
+                      className="aspect-square w-full rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {uploadingImage && (
+              <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Uploading image...
+              </div>
+            )}
+          </div>
+
+          <label className="mt-4 flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={isPublished}
+              onChange={(e) => setIsPublished(e.target.checked)}
+            />
+            Publish immediately
+          </label>
+
+          {error ? (
+            <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
+              {error}
+            </div>
+          ) : null}
+
+          <button
+            disabled={submitting}
+            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
+            type="submit"
+          >
+            {submitting ? "Creating…" : "Create product"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

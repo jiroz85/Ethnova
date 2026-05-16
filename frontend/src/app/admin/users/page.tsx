@@ -13,7 +13,7 @@ export default function AdminUsers() {
   const fetchUsers = useCallback(async () => {
     const apiBaseUrl =
       process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("ethnova_access_token");
 
     try {
       const response = await fetch(
@@ -47,7 +47,7 @@ export default function AdminUsers() {
   const toggleSuspendUser = async (userId: string, isSuspended: boolean) => {
     const apiBaseUrl =
       process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("ethnova_access_token");
 
     try {
       const response = await fetch(

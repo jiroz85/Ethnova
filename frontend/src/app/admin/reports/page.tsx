@@ -12,8 +12,9 @@ export default function AdminReports() {
   const [statusFilter, setStatusFilter] = useState("");
 
   const fetchReports = useCallback(async () => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    const token = localStorage.getItem("token");
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
+    const token = localStorage.getItem("ethnova_access_token");
 
     try {
       const params = new URLSearchParams({
@@ -38,7 +39,10 @@ export default function AdminReports() {
       setTotal(data.total);
     } catch (err) {
       console.error("Failed to load reports:", err);
-      if (err instanceof Error && (err.message.includes("401") || err.message.includes("403"))) {
+      if (
+        err instanceof Error &&
+        (err.message.includes("401") || err.message.includes("403"))
+      ) {
         window.location.href = "/login";
       }
     } finally {
@@ -51,8 +55,9 @@ export default function AdminReports() {
   }, [fetchReports]);
 
   const updateReportStatus = async (reportId: string, status: string) => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
-    const token = localStorage.getItem("token");
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
+    const token = localStorage.getItem("ethnova_access_token");
 
     try {
       const response = await fetch(`${apiBaseUrl}/reports/${reportId}/status`, {
@@ -167,7 +172,9 @@ export default function AdminReports() {
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {report.product ? `Product: ${report.product.title}` : `Seller: ${report.seller?.full_name}`}
+                          {report.product
+                            ? `Product: ${report.product.title}`
+                            : `Seller: ${report.seller?.full_name}`}
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                           {new Date(report.created_at).toLocaleDateString()}
@@ -209,10 +216,10 @@ export default function AdminReports() {
                           report.status === "pending"
                             ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                             : report.status === "reviewed"
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                            : report.status === "resolved"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                              : report.status === "resolved"
+                                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
                         }`}
                       >
                         {report.status}
@@ -223,19 +230,25 @@ export default function AdminReports() {
                         {report.status === "pending" && (
                           <>
                             <button
-                              onClick={() => updateReportStatus(report.id, "reviewed")}
+                              onClick={() =>
+                                updateReportStatus(report.id, "reviewed")
+                              }
                               className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                             >
                               Review
                             </button>
                             <button
-                              onClick={() => updateReportStatus(report.id, "resolved")}
+                              onClick={() =>
+                                updateReportStatus(report.id, "resolved")
+                              }
                               className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
                             >
                               Resolve
                             </button>
                             <button
-                              onClick={() => updateReportStatus(report.id, "dismissed")}
+                              onClick={() =>
+                                updateReportStatus(report.id, "dismissed")
+                              }
                               className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                             >
                               Dismiss
@@ -245,13 +258,17 @@ export default function AdminReports() {
                         {report.status === "reviewed" && (
                           <>
                             <button
-                              onClick={() => updateReportStatus(report.id, "resolved")}
+                              onClick={() =>
+                                updateReportStatus(report.id, "resolved")
+                              }
                               className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
                             >
                               Resolve
                             </button>
                             <button
-                              onClick={() => updateReportStatus(report.id, "dismissed")}
+                              onClick={() =>
+                                updateReportStatus(report.id, "dismissed")
+                              }
                               className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                             >
                               Dismiss
@@ -288,15 +305,11 @@ export default function AdminReports() {
               <div>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   Showing{" "}
-                  <span className="font-medium">
-                    {(page - 1) * 20 + 1}
-                  </span>{" "}
-                  to{" "}
+                  <span className="font-medium">{(page - 1) * 20 + 1}</span> to{" "}
                   <span className="font-medium">
                     {Math.min(page * 20, total)}
                   </span>{" "}
-                  of{" "}
-                  <span className="font-medium">{total}</span> results
+                  of <span className="font-medium">{total}</span> results
                 </p>
               </div>
               <div>
