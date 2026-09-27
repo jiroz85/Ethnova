@@ -72,4 +72,5 @@ npm run dev
 **Jiregna Meseret Sirna**
 
 - GitHub: https://github.com/jiroz85
-- - Portfolio: https://jiregna-portfolio.vercel.app/
+- LinkedIn: https://www.linkedin.com/in/jiregna-meseret
+- Portfolio: https://jiregna-portfolio.vercel.app/
